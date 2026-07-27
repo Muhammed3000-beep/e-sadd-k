@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>e-Saddık Vatandaş Alanı</title>
+
+<style>
+
+body{
+margin:0;
+background:#eef3f8;
+font-family:"Segoe UI",Arial;
+}
+
+
+.header{
+
+background:#004b87;
+color:white;
+padding:25px;
+text-align:center;
+
+}
+
+
+.container{
+
+max-width:800px;
+width:95%;
+margin:30px auto;
+
+}
+
+
+.card{
+
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 5px 20px #0002;
+margin-bottom:20px;
+
+}
+
+
+input,button{
+
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:10px;
+
+}
+
+
+input{
+
+border:1px solid #ccc;
+
+}
+
+
+button{
+
+background:#005ca8;
+color:white;
+border:0;
+cursor:pointer;
+
+}
+
+
+.document{
+
+margin-top:15px;
+padding:15px;
+background:#f4f8fc;
+border-left:5px solid #005ca8;
+border-radius:10px;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+<h1>🏛️ e-Saddık</h1>
+
+<p>Vatandaş Hizmet Alanı</p>
+
+</div>
+
+
+
+<div class="container">
+
+
+<div class="card">
+
+<h2 id="userName">
+Yükleniyor...
+</h2>
+
+<p>
+Kişisel hizmetlerinize erişebilirsiniz.
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+
+<h3>🔎 İşlem Arayın</h3>
+
+
+<input id="search"
+placeholder="İşlem Arayın">
+
+
+<button onclick="searchData()">
+
+Ara
+
+</button>
+
+
+<div id="result"></div>
+
+
+</div>
+
+
+
+<div class="card">
+
+<button onclick="logout()">
+
+Güvenli Çıkış
+
+</button>
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<script type="module">
+
+
+import {initializeApp}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+getAuth,
+onAuthStateChanged,
+signOut
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+import {
+
+getDatabase,
+ref,
+get
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+const firebaseConfig = {
+
+apiKey:"AIzaSyC9-0gIJWNdp0WcsTbHcEhOku6NG2oFd2I",
+
+authDomain:"esad-87546.firebaseapp.com",
+
+databaseURL:"https://esad-87546-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"esad-87546",
+
+storageBucket:"esad-87546.firebasestorage.app",
+
+messagingSenderId:"7636719676",
+
+appId:"1:7636719676:web:699f17f22759af64fa0b39"
+
+};
+
+
+
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth(app);
+
+const db=getDatabase(app);
+
+
+
+let uid=null;
+
+
+
+onAuthStateChanged(auth,async(user)=>{
+
+
+if(!user){
+
+window.location.href="index.html";
+
+return;
+
+}
+
+
+uid=user.uid;
+
+
+const snap=
+await get(
+ref(db,"users/"+uid)
+);
+
+
+if(snap.exists()){
+
+
+let u=snap.val();
+
+
+document.getElementById("userName")
+.innerHTML=
+"Sayın "+u.name+" "+u.surname;
+
+
+}
+
+
+});
+
+
+
+
+
+window.searchData=async function(){
+
+
+
+let value=
+document.getElementById("search")
+.value
+.toLowerCase();
+
+
+
+let result=
+document.getElementById("result");
+
+
+
+result.innerHTML="";
+
+
+
+const snap=
+await get(
+ref(db,"documents/"+uid)
+);
+
+
+
+if(!snap.exists()){
+
+result.innerHTML=
+`
+<div class="document">
+❌ Kayıt bulunamadı
+</div>
+`;
+
+return;
+
+}
+
+
+
+let found=false;
+
+
+
+Object.values(snap.val())
+.forEach(item=>{
+
+
+if(
+item.tag.toLowerCase()
+.includes(value)
+){
+
+
+found=true;
+
+
+result.innerHTML +=
+
+`
+<div class="document">
+
+<h3>
+📄 ${item.tag}
+</h3>
+
+<p>
+${item.message}
+</p>
+
+<p>
+📅 ${item.date}
+</p>
+
+</div>
+`;
+
+}
+
+
+});
+
+
+
+if(!found){
+
+result.innerHTML=
+`
+<div class="document">
+❌ İşlem bulunamadı
+</div>
+`;
+
+}
+
+
+
+}
+
+
+
+
+window.logout=function(){
+
+
+signOut(auth)
+.then(()=>{
+
+window.location.href="index.html";
+
+});
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
