@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>e-Saddık Kayıt</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#eef3f8;
+    font-family:Arial;
+}
+
+.box{
+
+    max-width:400px;
+    margin:50px auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 20px #0003;
+
+}
+
+
+input,button{
+
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+    border-radius:10px;
+    border:1px solid #ddd;
+
+}
+
+
+button{
+
+    background:#0057a8;
+    color:white;
+    border:0;
+    cursor:pointer;
+
+}
+
+
+h2{
+
+text-align:center;
+
+}
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="box">
+
+<h2>
+🏛️ e-Saddık Kayıt
+</h2>
+
+
+<input id="name" placeholder="Ad">
+
+
+<input id="surname" placeholder="Soyad">
+
+
+<input id="email" placeholder="E-Mail">
+
+
+<input id="password" type="password" placeholder="Şifre">
+
+
+<button onclick="register()">
+Kayıt Ol
+</button>
+
+
+</div>
+
+
+
+
+<script type="module">
+
+
+import {initializeApp}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+getAuth,
+createUserWithEmailAndPassword
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+import {
+
+getDatabase,
+ref,
+set
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+
+const firebaseConfig = {
+
+apiKey:"AIzaSyC9-0gIJWNdp0WcsTbHcEhOku6NG2oFd2I",
+
+authDomain:"esad-87546.firebaseapp.com",
+
+databaseURL:"https://esad-87546-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"esad-87546",
+
+storageBucket:"esad-87546.firebasestorage.app",
+
+messagingSenderId:"7636719676",
+
+appId:"1:7636719676:web:699f17f22759af64fa0b39"
+
+};
+
+
+
+const app =
+initializeApp(firebaseConfig);
+
+
+const auth =
+getAuth(app);
+
+
+const db =
+getDatabase(app);
+
+
+
+
+
+window.register = async function(){
+
+
+let name =
+document.getElementById("name").value;
+
+
+let surname =
+document.getElementById("surname").value;
+
+
+let email =
+document.getElementById("email").value;
+
+
+let password =
+document.getElementById("password").value;
+
+
+
+if(!name || !surname || !email || !password){
+
+alert("Eksik bilgi var");
+return;
+
+}
+
+
+
+try{
+
+
+const userCredential =
+
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+
+
+const uid =
+userCredential.user.uid;
+
+
+
+await set(
+ref(db,"users/"+uid),
+{
+
+name:name,
+
+surname:surname,
+
+email:email,
+
+role:"user",
+
+createdAt:new Date().toLocaleString()
+
+}
+
+);
+
+
+
+alert("Kayıt başarılı 🎉");
+
+
+location.href="index.html";
+
+
+
+}catch(error){
+
+
+alert(error.message);
+
+
+}
+
+
+
+}
+
+
+
+</script>
+
+
+</body>
+</html>
