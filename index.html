@@ -3,57 +3,55 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>e-Saddık | Dijital Vatandaşlık Sistemi</title>
+<title>e-Saddık | Dijital Hizmet Kapısı</title>
 
 <style>
 
 *{
-box-sizing:border-box;
-font-family:"Segoe UI",Arial;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Arial,sans-serif;
 }
 
-
 body{
-
-margin:0;
-background:#edf2f7;
-
+    margin:0;
+    min-height:100vh;
+    background:#eef3f8;
 }
 
 
 .header{
+    background:linear-gradient(135deg,#003b70,#0068b7);
+    color:white;
+    padding:35px 20px;
+    text-align:center;
+}
 
-background:linear-gradient(135deg,#003b70,#0066b3);
-color:white;
-padding:25px;
-text-align:center;
 
+.header .logo{
+    font-size:55px;
 }
 
 
 .header h1{
-
-margin:0;
-font-size:32px;
-
+    margin:10px 0;
+    font-size:32px;
 }
 
 
 .header p{
-
-margin:8px;
-
+    margin:0;
+    opacity:.9;
 }
 
 
 
 .container{
 
-max-width:450px;
-margin:35px auto;
-padding:20px;
+    width:95%;
+    max-width:450px;
+    margin:35px auto;
 
 }
 
@@ -61,31 +59,19 @@ padding:20px;
 
 .card{
 
-background:white;
-padding:30px;
-border-radius:18px;
-box-shadow:0 8px 25px #0002;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 10px 30px #0002;
 
 }
 
 
 
-.logo{
+h2{
 
 text-align:center;
-font-size:50px;
-
-}
-
-
-
-input,button{
-
-width:100%;
-padding:14px;
-margin-top:12px;
-border-radius:8px;
-font-size:16px;
+color:#003b70;
 
 }
 
@@ -93,20 +79,30 @@ font-size:16px;
 
 input{
 
-border:1px solid #ccc;
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:10px;
+border:1px solid #ccd6e0;
+font-size:16px;
 
 }
+
 
 
 button{
 
+width:100%;
+padding:14px;
+margin-top:18px;
+border:0;
+border-radius:10px;
 background:#004f91;
 color:white;
-border:0;
+font-size:17px;
 cursor:pointer;
 
 }
-
 
 
 button:hover{
@@ -117,10 +113,10 @@ background:#00345f;
 
 
 
-.switch{
+.change{
 
 text-align:center;
-margin-top:15px;
+margin-top:20px;
 color:#005ca8;
 cursor:pointer;
 
@@ -128,12 +124,13 @@ cursor:pointer;
 
 
 
-.notice{
+.info{
 
-background:#f1f7ff;
-padding:12px;
+margin-top:20px;
+background:#f3f8ff;
 border-left:4px solid #005ca8;
-margin-top:15px;
+padding:12px;
+font-size:14px;
 
 }
 
@@ -142,11 +139,12 @@ margin-top:15px;
 @media(max-width:600px){
 
 .header h1{
-font-size:24px;
+font-size:25px;
 }
 
+
 .card{
-padding:20px;
+padding:22px;
 }
 
 }
@@ -161,13 +159,16 @@ padding:20px;
 <body>
 
 
+
 <div class="header">
 
-<div class="logo">🏛️</div>
+<div class="logo">
+🏛️
+</div>
 
 <h1>e-Saddık</h1>
 
-<p>Dijital Vatandaşlık Hizmetleri</p>
+<p>Dijital Hizmet ve Vatandaşlık Sistemi</p>
 
 </div>
 
@@ -184,19 +185,24 @@ Vatandaş Girişi
 </h2>
 
 
-<div id="registerFields" style="display:none">
+
+<div id="registerArea" style="display:none;">
 
 
-<input id="name" placeholder="Ad">
+<input id="name"
+placeholder="Ad">
 
-<input id="surname" placeholder="Soyad">
+
+<input id="surname"
+placeholder="Soyad">
 
 
 </div>
 
 
 
-<input id="email" placeholder="E-Posta">
+<input id="email"
+placeholder="E-Posta">
 
 
 <input id="password"
@@ -205,8 +211,8 @@ placeholder="Şifre">
 
 
 
-<button onclick="action()"
-id="btn">
+<button onclick="process()"
+id="mainButton">
 
 Giriş Yap
 
@@ -214,23 +220,26 @@ Giriş Yap
 
 
 
-<div class="switch"
+<div class="change"
 onclick="changeMode()"
-id="switch">
+id="changeText">
 
-Kayıt olmak için tıklayın
-
-</div>
-
-
-<div class="notice">
-
-e-Saddık sistemi güvenli dijital hizmet simülasyonudur.
+Yeni vatandaş kaydı oluştur
 
 </div>
 
 
+
+<div class="info">
+
+🔒 Bilgileriniz Firebase güvenliği ile korunmaktadır.
+
 </div>
+
+
+
+</div>
+
 
 </div>
 
@@ -242,9 +251,7 @@ e-Saddık sistemi güvenli dijital hizmet simülasyonudur.
 
 
 import {initializeApp}
-
 from
-
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
@@ -276,6 +283,7 @@ from
 
 
 
+
 const firebaseConfig = {
 
 apiKey:"AIzaSyC9-0gIJWNdp0WcsTbHcEhOku6NG2oFd2I",
@@ -296,15 +304,20 @@ appId:"1:7636719676:web:699f17f22759af64fa0b39"
 
 
 
-const app=initializeApp(firebaseConfig);
-
-const auth=getAuth(app);
-
-const db=getDatabase(app);
+const app =
+initializeApp(firebaseConfig);
 
 
+const auth =
+getAuth(app);
 
-let register=false;
+
+const db =
+getDatabase(app);
+
+
+
+let registerMode=false;
 
 
 
@@ -312,33 +325,33 @@ let register=false;
 window.changeMode=function(){
 
 
-register=!register;
+registerMode=!registerMode;
 
 
-document.getElementById("registerFields")
-.style.display=
-register?"block":"none";
+document.getElementById("registerArea")
+.style.display =
+registerMode ? "block":"none";
 
 
 document.getElementById("title")
-.innerHTML=
-register?
+.innerHTML =
+registerMode ?
 "Vatandaş Kayıt":
 "Vatandaş Girişi";
 
 
-document.getElementById("btn")
-.innerHTML=
-register?
+document.getElementById("mainButton")
+.innerHTML =
+registerMode ?
 "Kayıt Ol":
 "Giriş Yap";
 
 
-document.getElementById("switch")
-.innerHTML=
-register?
-"Giriş yapmak için tıklayın":
-"Kayıt olmak için tıklayın";
+document.getElementById("changeText")
+.innerHTML =
+registerMode ?
+"Giriş ekranına dön":
+"Yeni vatandaş kaydı oluştur";
 
 
 }
@@ -346,16 +359,15 @@ register?
 
 
 
-
-window.action=async function(){
-
+window.process=async function(){
 
 
-let email=
+
+let email =
 document.getElementById("email").value;
 
 
-let password=
+let password =
 document.getElementById("password").value;
 
 
@@ -363,29 +375,29 @@ document.getElementById("password").value;
 try{
 
 
+if(registerMode){
 
-if(register){
 
 
-let name=
+let name =
 document.getElementById("name").value;
 
 
-let surname=
+let surname =
 document.getElementById("surname").value;
 
 
 
-if(!name||!surname){
+if(!name || !surname){
 
-alert("Ad soyad gerekli");
+alert("Ad ve soyad zorunludur");
 return;
 
 }
 
 
 
-const result=
+const result =
 await createUserWithEmailAndPassword(
 auth,
 email,
@@ -416,15 +428,19 @@ createdAt:new Date().toLocaleString()
 
 
 
-alert("Vatandaş kaydı oluşturuldu");
+alert("Vatandaş kaydı başarıyla oluşturuldu");
+
+
+location.href="kullanici.html";
 
 
 
-}else{
+}
+
+else{
 
 
-
-const result=
+const result =
 await signInWithEmailAndPassword(
 auth,
 email,
@@ -433,13 +449,9 @@ password
 
 
 
-const user=result.user;
-
-
-
-const profile=
+const profile =
 await get(
-ref(db,"users/"+user.uid)
+ref(db,"users/"+result.user.uid)
 );
 
 
@@ -447,18 +459,7 @@ ref(db,"users/"+user.uid)
 if(profile.exists()){
 
 
-alert(
-
-"Hoş geldiniz "+
-profile.val().name+
-" "+
-profile.val().surname
-
-);
-
-
-
-location.href="panel.html";
+location.href="kullanici.html";
 
 
 }
@@ -469,15 +470,25 @@ location.href="panel.html";
 
 
 
-}catch(error){
+}
+
+catch(error){
 
 
 
 if(error.code==="auth/email-already-in-use"){
 
-alert("Bu e-posta zaten kayıtlı. Lütfen giriş yapın.");
+alert("Bu e-posta zaten kayıtlı. Giriş yapmayı deneyin.");
 
 }
+
+
+else if(error.code==="auth/invalid-credential"){
+
+alert("E-posta veya şifre hatalı.");
+
+}
+
 
 else if(error.code==="auth/weak-password"){
 
@@ -485,11 +496,6 @@ alert("Şifre en az 6 karakter olmalı.");
 
 }
 
-else if(error.code==="auth/invalid-credential"){
-
-alert("E-posta veya şifre hatalı.");
-
-}
 
 else{
 
@@ -498,11 +504,14 @@ alert(error.message);
 }
 
 
-}
-
-
 
 }
+
+
+
+
+}
+
 
 
 
