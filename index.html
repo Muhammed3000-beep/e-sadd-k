@@ -3,56 +3,154 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>e-Saddık Kayıt</title>
+<title>e-Saddık | Dijital Vatandaşlık Sistemi</title>
 
 <style>
 
+*{
+box-sizing:border-box;
+font-family:"Segoe UI",Arial;
+}
+
+
 body{
-    margin:0;
-    background:#eef3f8;
-    font-family:Arial;
-}
 
-.box{
-
-    max-width:400px;
-    margin:50px auto;
-    background:white;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 5px 20px #0003;
+margin:0;
+background:#edf2f7;
 
 }
+
+
+.header{
+
+background:linear-gradient(135deg,#003b70,#0066b3);
+color:white;
+padding:25px;
+text-align:center;
+
+}
+
+
+.header h1{
+
+margin:0;
+font-size:32px;
+
+}
+
+
+.header p{
+
+margin:8px;
+
+}
+
+
+
+.container{
+
+max-width:450px;
+margin:35px auto;
+padding:20px;
+
+}
+
+
+
+.card{
+
+background:white;
+padding:30px;
+border-radius:18px;
+box-shadow:0 8px 25px #0002;
+
+}
+
+
+
+.logo{
+
+text-align:center;
+font-size:50px;
+
+}
+
 
 
 input,button{
 
-    width:100%;
-    padding:14px;
-    margin-top:12px;
-    border-radius:10px;
-    border:1px solid #ddd;
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:8px;
+font-size:16px;
+
+}
+
+
+
+input{
+
+border:1px solid #ccc;
 
 }
 
 
 button{
 
-    background:#0057a8;
-    color:white;
-    border:0;
-    cursor:pointer;
+background:#004f91;
+color:white;
+border:0;
+cursor:pointer;
 
 }
 
 
-h2{
+
+button:hover{
+
+background:#00345f;
+
+}
+
+
+
+.switch{
 
 text-align:center;
+margin-top:15px;
+color:#005ca8;
+cursor:pointer;
 
 }
+
+
+
+.notice{
+
+background:#f1f7ff;
+padding:12px;
+border-left:4px solid #005ca8;
+margin-top:15px;
+
+}
+
+
+
+@media(max-width:600px){
+
+.header h1{
+font-size:24px;
+}
+
+.card{
+padding:20px;
+}
+
+}
+
 
 </style>
 
@@ -63,31 +161,79 @@ text-align:center;
 <body>
 
 
-<div class="box">
+<div class="header">
 
-<h2>
-🏛️ e-Saddık Kayıt
+<div class="logo">🏛️</div>
+
+<h1>e-Saddık</h1>
+
+<p>Dijital Vatandaşlık Hizmetleri</p>
+
+</div>
+
+
+
+<div class="container">
+
+
+<div class="card">
+
+
+<h2 id="title">
+Vatandaş Girişi
 </h2>
+
+
+<div id="registerFields" style="display:none">
 
 
 <input id="name" placeholder="Ad">
 
-
 <input id="surname" placeholder="Soyad">
 
 
-<input id="email" placeholder="E-Mail">
+</div>
 
 
-<input id="password" type="password" placeholder="Şifre">
+
+<input id="email" placeholder="E-Posta">
 
 
-<button onclick="register()">
-Kayıt Ol
+<input id="password"
+type="password"
+placeholder="Şifre">
+
+
+
+<button onclick="action()"
+id="btn">
+
+Giriş Yap
+
 </button>
 
 
+
+<div class="switch"
+onclick="changeMode()"
+id="switch">
+
+Kayıt olmak için tıklayın
+
 </div>
+
+
+<div class="notice">
+
+e-Saddık sistemi güvenli dijital hizmet simülasyonudur.
+
+</div>
+
+
+</div>
+
+</div>
+
 
 
 
@@ -96,14 +242,17 @@ Kayıt Ol
 
 
 import {initializeApp}
+
 from
+
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
 import {
 
 getAuth,
-createUserWithEmailAndPassword
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword
 
 }
 
@@ -116,14 +265,14 @@ import {
 
 getDatabase,
 ref,
-set
+set,
+get
 
 }
 
 from
 
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
 
 
 
@@ -147,55 +296,96 @@ appId:"1:7636719676:web:699f17f22759af64fa0b39"
 
 
 
-const app =
-initializeApp(firebaseConfig);
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth(app);
+
+const db=getDatabase(app);
 
 
-const auth =
-getAuth(app);
 
-
-const db =
-getDatabase(app);
-
+let register=false;
 
 
 
 
-window.register = async function(){
+window.changeMode=function(){
 
 
-let name =
-document.getElementById("name").value;
+register=!register;
 
 
-let surname =
-document.getElementById("surname").value;
+document.getElementById("registerFields")
+.style.display=
+register?"block":"none";
 
 
-let email =
+document.getElementById("title")
+.innerHTML=
+register?
+"Vatandaş Kayıt":
+"Vatandaş Girişi";
+
+
+document.getElementById("btn")
+.innerHTML=
+register?
+"Kayıt Ol":
+"Giriş Yap";
+
+
+document.getElementById("switch")
+.innerHTML=
+register?
+"Giriş yapmak için tıklayın":
+"Kayıt olmak için tıklayın";
+
+
+}
+
+
+
+
+
+window.action=async function(){
+
+
+
+let email=
 document.getElementById("email").value;
 
 
-let password =
+let password=
 document.getElementById("password").value;
-
-
-
-if(!name || !surname || !email || !password){
-
-alert("Eksik bilgi var");
-return;
-
-}
 
 
 
 try{
 
 
-const userCredential =
 
+if(register){
+
+
+let name=
+document.getElementById("name").value;
+
+
+let surname=
+document.getElementById("surname").value;
+
+
+
+if(!name||!surname){
+
+alert("Ad soyad gerekli");
+return;
+
+}
+
+
+
+const result=
 await createUserWithEmailAndPassword(
 auth,
 email,
@@ -204,13 +394,10 @@ password
 
 
 
-const uid =
-userCredential.user.uid;
-
-
-
 await set(
-ref(db,"users/"+uid),
+
+ref(db,"users/"+result.user.uid),
+
 {
 
 name:name,
@@ -229,17 +416,86 @@ createdAt:new Date().toLocaleString()
 
 
 
-alert("Kayıt başarılı 🎉");
+alert("Vatandaş kaydı oluşturuldu");
 
 
-location.href="index.html";
+
+}else{
+
+
+
+const result=
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+
+
+const user=result.user;
+
+
+
+const profile=
+await get(
+ref(db,"users/"+user.uid)
+);
+
+
+
+if(profile.exists()){
+
+
+alert(
+
+"Hoş geldiniz "+
+profile.val().name+
+" "+
+profile.val().surname
+
+);
+
+
+
+location.href="panel.html";
+
+
+}
+
+
+
+}
 
 
 
 }catch(error){
 
 
+
+if(error.code==="auth/email-already-in-use"){
+
+alert("Bu e-posta zaten kayıtlı. Lütfen giriş yapın.");
+
+}
+
+else if(error.code==="auth/weak-password"){
+
+alert("Şifre en az 6 karakter olmalı.");
+
+}
+
+else if(error.code==="auth/invalid-credential"){
+
+alert("E-posta veya şifre hatalı.");
+
+}
+
+else{
+
 alert(error.message);
+
+}
 
 
 }
