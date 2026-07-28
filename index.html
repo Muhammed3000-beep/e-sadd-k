@@ -4,177 +4,223 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>e-Saddık Giriş</title>
+<title>e-Saddık</title>
 
 <style>
 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Segoe UI",Arial,sans-serif;
+}
+
 body{
 
-margin:0;
 background:#eef3f8;
-font-family:"Segoe UI",Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
 
 }
 
+.container{
 
-.box{
-
-max-width:420px;
-width:90%;
-background:white;
-margin:50px auto;
+width:95%;
+max-width:450px;
+background:#fff;
 padding:30px;
 border-radius:20px;
-box-shadow:0 5px 20px #0003;
+box-shadow:0 8px 25px rgba(0,0,0,.15);
 
 }
 
-
-h1{
+.logo{
 
 text-align:center;
-color:#004b87;
+margin-bottom:25px;
 
 }
 
+.logo h1{
 
-input,button{
+color:#004b87;
+font-size:34px;
+
+}
+
+.logo p{
+
+color:#666;
+margin-top:8px;
+
+}
+
+.tabs{
+
+display:flex;
+margin-bottom:20px;
+
+}
+
+.tabs button{
+
+flex:1;
+padding:14px;
+border:none;
+cursor:pointer;
+font-size:16px;
+background:#d9e6f2;
+
+}
+
+.tabs button.active{
+
+background:#004b87;
+color:#fff;
+
+}
+
+.form{
+
+display:none;
+
+}
+
+.form.active{
+
+display:block;
+
+}
+
+input{
 
 width:100%;
 padding:14px;
 margin-top:12px;
-border-radius:10px;
-
-}
-
-
-input{
-
 border:1px solid #ccc;
+border-radius:10px;
+font-size:15px;
 
 }
 
+.mainBtn{
 
-button{
-
-background:#005ca8;
+width:100%;
+padding:15px;
+margin-top:18px;
+border:none;
+border-radius:10px;
+background:#004b87;
 color:white;
-border:0;
+font-size:16px;
 cursor:pointer;
 
 }
 
+.mainBtn:hover{
 
-button:hover{
-
-background:#003b70;
+background:#00345f;
 
 }
-
 
 #msg{
 
-text-align:center;
 margin-top:15px;
+text-align:center;
+font-weight:bold;
 
 }
-
 
 </style>
 
 </head>
 
-
 <body>
 
+<div class="container">
 
+<div class="logo">
 
-<div class="box">
+<h1>🏛 e-Saddık</h1>
 
+<p>Vatandaş Giriş Sistemi</p>
 
-<h1>🏛️ e-Saddık</h1>
+</div>
 
-<p style="text-align:center">
-Vatandaş Sistemi
-</p>
+<div class="tabs">
 
-
-
-<h3>Kayıt Ol</h3>
-
-
-<input id="name"
-placeholder="Ad">
-
-
-<input id="surname"
-placeholder="Soyad">
-
-
-<input id="email"
-placeholder="E-Posta">
-
-
-<input id="password"
-type="password"
-placeholder="Şifre">
-
-
-<button onclick="register()">
-
-Kayıt Ol
-
+<button id="loginTab" class="active">
+Giriş Yap
 </button>
 
+<button id="registerTab">
+Kayıt Ol
+</button>
 
+</div>
 
+<div id="loginForm" class="form active">
 
-<hr>
-
-
-
-<h3>Giriş Yap</h3>
-
-
-<input id="loginEmail"
+<input
+type="email"
+id="loginEmail"
 placeholder="E-Posta">
 
-
-<input id="loginPassword"
+<input
 type="password"
+id="loginPassword"
 placeholder="Şifre">
 
-
-<button onclick="login()">
+<button
+class="mainBtn"
+id="loginBtn">
 
 Giriş Yap
 
 </button>
 
+</div>
 
+<div id="registerForm" class="form">
 
-<p id="msg"></p>
+<input
+type="text"
+id="name"
+placeholder="Ad">
 
+<input
+type="text"
+id="surname"
+placeholder="Soyad">
+
+<input
+type="email"
+id="email"
+placeholder="E-Posta">
+
+<input
+type="password"
+id="password"
+placeholder="Şifre">
+
+<button
+class="mainBtn"
+id="registerBtn">
+
+Kayıt Ol
+
+</button>
 
 </div>
 
+<p id="msg"></p>
+  <script type="module">
 
-
-
-
-
-<script type="module">
-
-
-import {initializeApp}
-
-from
-
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 
@@ -184,13 +230,7 @@ signInWithEmailAndPassword,
 setPersistence,
 browserLocalPersistence
 
-}
-
-from
-
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
 
@@ -198,212 +238,132 @@ getDatabase,
 ref,
 set
 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyC9-0gIJWNdp0WcsTbHcEhOku6NG2oFd2I",
+
+authDomain: "esad-87546.firebaseapp.com",
+
+databaseURL: "https://esad-87546-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId: "esad-87546",
+
+storageBucket: "esad-87546.firebasestorage.app",
+
+messagingSenderId: "7636719676",
+
+appId: "1:7636719676:web:699f17f22759af64fa0b39"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getDatabase(app);
+
+await setPersistence(auth,browserLocalPersistence);
+
+const loginTab=document.getElementById("loginTab");
+const registerTab=document.getElementById("registerTab");
+
+const loginForm=document.getElementById("loginForm");
+const registerForm=document.getElementById("registerForm");
+
+loginTab.onclick=()=>{
+
+loginTab.classList.add("active");
+registerTab.classList.remove("active");
+
+loginForm.classList.add("active");
+registerForm.classList.remove("active");
+
+};
+
+registerTab.onclick=()=>{
+
+registerTab.classList.add("active");
+loginTab.classList.remove("active");
+
+registerForm.classList.add("active");
+loginForm.classList.remove("active");
+
+};
+
+const msg=document.getElementById("msg");
+    document.getElementById("registerBtn").onclick = async ()=>{
+
+const name=document.getElementById("name").value.trim();
+const surname=document.getElementById("surname").value.trim();
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+
+if(!name || !surname || !email || !password){
+
+msg.style.color="red";
+msg.innerHTML="Lütfen tüm alanları doldurun.";
+return;
+
 }
 
-from
+try{
 
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const userCredential =
+await createUserWithEmailAndPassword(auth,email,password);
 
+const uid=userCredential.user.uid;
 
+await set(ref(db,"users/"+uid),{
 
+name:name,
+surname:surname,
+email:email
 
-const firebaseConfig={
+});
 
+msg.style.color="green";
+msg.innerHTML="Kayıt başarılı. Yönlendiriliyorsunuz...";
 
-apiKey:"AIzaSyC9-0G-0-0-0",
+setTimeout(()=>{
 
-authDomain:"esad-87546.firebaseapp.com",
+window.location.href="kullanici.html";
 
-databaseURL:"https://esad-87546-default-rtdb.europe-west1.firebasedatabase.app",
+},1000);
 
-projectId:"esad-87546",
+}catch(e){
 
-storageBucket:"esad-87546.firebasestorage.app",
+msg.style.color="red";
+msg.innerHTML=e.message;
 
-messagingSenderId:"7636719676",
-
-appId:"1:7636719676:web:699f17f22759af64fa0b39"
-
+}
 
 };
 
 
 
+document.getElementById("loginBtn").onclick = async ()=>{
 
-const app=initializeApp(firebaseConfig);
-
-
-const auth=getAuth(app);
-
-
-const db=getDatabase(app);
-
-
-
-setPersistence(
-auth,
-browserLocalPersistence
-);
-
-
-
-
-
-window.register=async()=>{
-
-
-let name=
-document.getElementById("name").value;
-
-
-let surname=
-document.getElementById("surname").value;
-
-
-let email=
-document.getElementById("email").value;
-
-
-let password=
-document.getElementById("password").value;
-
-
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
 
 try{
 
-
-let userCredential=
-
-await createUserWithEmailAndPassword(
-
-auth,
-email,
-password
-
-);
-
-
-
-let uid=userCredential.user.uid;
-
-
-
-await set(
-
-ref(db,"users/"+uid),
-
-{
-
-name:name,
-
-surname:surname,
-
-email:email
-
-}
-
-);
-
-
-
-// cüzdan oluştur
-
-await set(
-
-ref(db,"wallets/"+uid),
-
-{
-
-name:name,
-
-surname:surname,
-
-accountId:
-Math.floor(10000+Math.random()*90000),
-
-balance:1000
-
-}
-
-);
-
-
-
-document.getElementById("msg")
-.innerHTML=
-"✅ Kayıt başarılı";
-
+await signInWithEmailAndPassword(auth,email,password);
 
 window.location.href="kullanici.html";
 
+}catch(e){
 
-
-}
-
-catch(e){
-
-document.getElementById("msg")
-.innerHTML=e.message;
+msg.style.color="red";
+msg.innerHTML="E-posta veya şifre hatalı.";
 
 }
 
-
-}
-
-
-
-
-
-window.login=async()=>{
-
-
-let email=
-
-document.getElementById("loginEmail").value;
-
-
-let password=
-
-document.getElementById("loginPassword").value;
-
-
-
-try{
-
-
-await signInWithEmailAndPassword(
-
-auth,
-email,
-password
-
-);
-
-
-
-window.location.href="kullanici.html";
-
-
-}
-
-catch(e){
-
-
-document.getElementById("msg")
-.innerHTML=e.message;
-
-
-}
-
-
-
-}
-
-
+};
 
 </script>
 
-
 </body>
-
 </html>
