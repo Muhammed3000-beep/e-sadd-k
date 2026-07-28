@@ -1,157 +1,109 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>e-Saddık | Dijital Hizmet Kapısı</title>
+<title>e-Saddık Vatandaş Alanı</title>
 
 <style>
 
 *{
-    box-sizing:border-box;
-    font-family:"Segoe UI",Arial,sans-serif;
+box-sizing:border-box;
 }
 
 body{
-    margin:0;
-    min-height:100vh;
-    background:#eef3f8;
+margin:0;
+background:#eef3f8;
+font-family:"Segoe UI",Arial;
 }
 
 
 .header{
-    background:linear-gradient(135deg,#003b70,#0068b7);
-    color:white;
-    padding:35px 20px;
-    text-align:center;
+
+background:#004b87;
+color:white;
+padding:25px;
+text-align:center;
+
 }
-
-
-.header .logo{
-    font-size:55px;
-}
-
-
-.header h1{
-    margin:10px 0;
-    font-size:32px;
-}
-
-
-.header p{
-    margin:0;
-    opacity:.9;
-}
-
 
 
 .container{
 
-    width:95%;
-    max-width:450px;
-    margin:35px auto;
+max-width:800px;
+width:95%;
+margin:30px auto;
 
 }
-
 
 
 .card{
 
-    background:white;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 10px 30px #0002;
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 5px 20px #0002;
+margin-bottom:20px;
 
 }
 
 
-
-h2{
-
-text-align:center;
-color:#003b70;
-
-}
-
-
-
-input{
+input,button{
 
 width:100%;
 padding:14px;
 margin-top:12px;
 border-radius:10px;
-border:1px solid #ccd6e0;
-font-size:16px;
 
 }
 
+
+input{
+
+border:1px solid #ccc;
+
+}
 
 
 button{
 
-width:100%;
-padding:14px;
-margin-top:18px;
-border:0;
-border-radius:10px;
-background:#004f91;
+background:#005ca8;
 color:white;
-font-size:17px;
-cursor:pointer;
+border:0;
 
 }
 
 
-button:hover{
+.document{
 
-background:#00345f;
-
-}
-
-
-
-.change{
-
-text-align:center;
-margin-top:20px;
-color:#005ca8;
-cursor:pointer;
+margin-top:15px;
+padding:15px;
+background:#f4f8fc;
+border-left:5px solid #005ca8;
+border-radius:10px;
 
 }
 
 
+.wallet{
 
-.info{
-
-margin-top:20px;
-background:#f3f8ff;
-border-left:4px solid #005ca8;
-padding:12px;
-font-size:14px;
+background:#005ca8;
+color:white;
 
 }
 
 
+.balance{
 
-@media(max-width:600px){
-
-.header h1{
-font-size:25px;
-}
-
-
-.card{
-padding:22px;
-}
+font-size:35px;
+font-weight:bold;
 
 }
-
 
 </style>
-
 
 </head>
 
@@ -159,16 +111,11 @@ padding:22px;
 <body>
 
 
-
 <div class="header">
 
-<div class="logo">
-🏛️
-</div>
+<h1>🏛️ e-Saddık</h1>
 
-<h1>e-Saddık</h1>
-
-<p>Dijital Hizmet ve Vatandaşlık Sistemi</p>
+<p>Vatandaş Hizmet Alanı</p>
 
 </div>
 
@@ -179,76 +126,75 @@ padding:22px;
 
 <div class="card">
 
-
-<h2 id="title">
-Vatandaş Girişi
+<h2 id="userName">
+Yükleniyor...
 </h2>
 
-
-
-<div id="registerArea" style="display:none;">
-
-
-<input id="name"
-placeholder="Ad">
-
-
-<input id="surname"
-placeholder="Soyad">
-
+<p>
+Kişisel hizmetlerinize erişebilirsiniz.
+</p>
 
 </div>
 
 
 
-<input id="email"
-placeholder="E-Posta">
+<div class="card wallet">
+
+<h3>💳 Dijital Cüzdan</h3>
+
+<div class="balance">
+
+₺<span id="balance">0</span>
+
+</div>
 
 
-<input id="password"
-type="password"
-placeholder="Şifre">
+<p>
+ID:
+<b id="accountID">---</b>
+</p>
 
 
-
-<button onclick="process()"
-id="mainButton">
-
-Giriş Yap
-
+<button onclick="openWallet()">
+Cüzdanı Aç
 </button>
 
 
+</div>
 
-<div class="change"
-onclick="changeMode()"
-id="changeText">
 
-Yeni vatandaş kaydı oluştur
+<div class="card">
+
+<h3>🔎 İşlem Arayın</h3>
+
+
+<input id="search"
+placeholder="İşlem Arayın">
+
+
+<button onclick="searchData()">
+Ara
+</button>
+
+
+<div id="result"></div>
+
 
 </div>
 
 
 
-<div class="info">
+<div class="card">
 
-🔒 Bilgileriniz Firebase güvenliği ile korunmaktadır.
-
-</div>
-
-
+<button onclick="logout()">
+Güvenli Çıkış
+</button>
 
 </div>
 
 
 </div>
-
-
-
-
-
 <script type="module">
-
 
 import {initializeApp}
 from
@@ -258,8 +204,10 @@ from
 import {
 
 getAuth,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword
+onAuthStateChanged,
+signOut,
+setPersistence,
+browserLocalPersistence
 
 }
 
@@ -272,7 +220,6 @@ import {
 
 getDatabase,
 ref,
-set,
 get
 
 }
@@ -283,10 +230,9 @@ from
 
 
 
-
 const firebaseConfig = {
 
-apiKey:"AIzaSyC9-0gIJWNdp0WcsTbHcEhOku6NG2oFd2I",
+apiKey:"AIzaSyC9-0G-0-0-0",
 
 authDomain:"esad-87546.firebaseapp.com",
 
@@ -304,54 +250,56 @@ appId:"1:7636719676:web:699f17f22759af64fa0b39"
 
 
 
-const app =
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getDatabase(app);
 
 
-const auth =
-getAuth(app);
+// OTURUMU KORU
 
-
-const db =
-getDatabase(app);
-
-
-
-let registerMode=false;
+setPersistence(auth,browserLocalPersistence);
 
 
 
-
-window.changeMode=function(){
-
-
-registerMode=!registerMode;
+let uid=null;
 
 
-document.getElementById("registerArea")
-.style.display =
-registerMode ? "block":"none";
+
+onAuthStateChanged(auth,async(user)=>{
 
 
-document.getElementById("title")
-.innerHTML =
-registerMode ?
-"Vatandaş Kayıt":
-"Vatandaş Girişi";
+if(!user){
+
+window.location.href="index.html";
+
+return;
+
+}
 
 
-document.getElementById("mainButton")
-.innerHTML =
-registerMode ?
-"Kayıt Ol":
-"Giriş Yap";
+uid=user.uid;
 
 
-document.getElementById("changeText")
-.innerHTML =
-registerMode ?
-"Giriş ekranına dön":
-"Yeni vatandaş kaydı oluştur";
+
+// Kullanıcı bilgisi
+
+const userSnap = await get(
+ref(db,"users/"+uid)
+);
+
+
+
+if(userSnap.exists()){
+
+
+let u=userSnap.val();
+
+
+document.getElementById("userName").innerHTML=
+
+"Sayın "+u.name+" "+u.surname;
 
 
 }
@@ -359,150 +307,154 @@ registerMode ?
 
 
 
-window.process=async function(){
+
+// Cüzdan bilgisi
+
+const walletSnap = await get(
+ref(db,"wallets/"+uid)
+);
 
 
 
-let email =
-document.getElementById("email").value;
+if(walletSnap.exists()){
 
 
-let password =
-document.getElementById("password").value;
+let w=walletSnap.val();
 
 
+document.getElementById("balance").innerHTML=
 
-try{
-
-
-if(registerMode){
+w.balance || 0;
 
 
 
-let name =
-document.getElementById("name").value;
+document.getElementById("accountID").innerHTML=
+
+w.accountId || "---";
 
 
-let surname =
-document.getElementById("surname").value;
+}
+
+
+});
 
 
 
-if(!name || !surname){
 
-alert("Ad ve soyad zorunludur");
+// cüzdan aç
+
+window.openWallet=function(){
+
+window.location.href="cuzdan.html";
+
+}
+
+
+
+
+// Evrak arama
+
+window.searchData=async function(){
+
+
+let value=
+
+document.getElementById("search")
+.value
+.toLowerCase()
+.trim();
+
+
+
+let result=document.getElementById("result");
+
+
+result.innerHTML="";
+
+
+
+const snap=
+
+await get(
+ref(db,"documents/"+uid)
+);
+
+
+
+if(!snap.exists()){
+
+
+result.innerHTML=
+
+`
+<div class="document">
+❌ Kayıt bulunamadı
+</div>
+`;
+
 return;
 
 }
 
 
 
-const result =
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
+let found=false;
 
 
 
-await set(
-
-ref(db,"users/"+result.user.uid),
-
-{
-
-name:name,
-
-surname:surname,
-
-email:email,
-
-role:"user",
-
-createdAt:new Date().toLocaleString()
-
-}
-
-);
+Object.values(snap.val())
+.forEach(item=>{
 
 
+if(
 
-alert("Vatandaş kaydı başarıyla oluşturuldu");
+item.tag.toLowerCase()
+.includes(value)
 
-
-location.href="kullanici.html";
-
-
-
-}
-
-else{
+){
 
 
-const result =
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
+found=true;
 
 
+result.innerHTML+=`
 
-const profile =
-await get(
-ref(db,"users/"+result.user.uid)
-);
+<div class="document">
 
+<h3>
+📄 ${item.tag}
+</h3>
 
+<p>
+${item.message}
+</p>
 
-if(profile.exists()){
+<p>
+📅 ${item.date}
+</p>
 
+</div>
 
-location.href="kullanici.html";
-
+`;
 
 }
 
-
-
-}
-
-
-
-}
-
-catch(error){
+});
 
 
 
-if(error.code==="auth/email-already-in-use"){
-
-alert("Bu e-posta zaten kayıtlı. Giriş yapmayı deneyin.");
-
-}
+if(!found){
 
 
-else if(error.code==="auth/invalid-credential"){
+result.innerHTML=
 
-alert("E-posta veya şifre hatalı.");
+`
+<div class="document">
+❌ İşlem bulunamadı
+</div>
+`;
 
 }
-
-
-else if(error.code==="auth/weak-password"){
-
-alert("Şifre en az 6 karakter olmalı.");
-
-}
-
-
-else{
-
-alert(error.message);
-
-}
-
 
 
 }
@@ -510,8 +462,20 @@ alert(error.message);
 
 
 
-}
+// çıkış
 
+window.logout=function(){
+
+
+signOut(auth)
+.then(()=>{
+
+window.location.href="index.html";
+
+});
+
+
+}
 
 
 
@@ -519,4 +483,5 @@ alert(error.message);
 
 
 </body>
+
 </html>
