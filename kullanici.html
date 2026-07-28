@@ -10,6 +10,10 @@
 
 <style>
 
+*{
+box-sizing:border-box;
+}
+
 body{
 margin:0;
 background:#eef3f8;
@@ -19,7 +23,7 @@ font-family:"Segoe UI",Arial;
 
 .header{
 
-background:#004b87;
+background:linear-gradient(135deg,#003b6f,#005ca8);
 color:white;
 padding:25px;
 text-align:center;
@@ -74,6 +78,13 @@ cursor:pointer;
 }
 
 
+button:hover{
+
+background:#003b70;
+
+}
+
+
 .document{
 
 margin-top:15px;
@@ -81,6 +92,22 @@ padding:15px;
 background:#f4f8fc;
 border-left:5px solid #005ca8;
 border-radius:10px;
+
+}
+
+
+.wallet{
+
+background:linear-gradient(135deg,#0b4f8a,#0074d9);
+color:white;
+
+}
+
+
+.balance{
+
+font-size:35px;
+font-weight:bold;
 
 }
 
@@ -120,6 +147,34 @@ Kişisel hizmetlerinize erişebilirsiniz.
 
 
 
+<div class="card wallet">
+
+<h3>💳 Dijital Cüzdan</h3>
+
+<div class="balance">
+
+₺<span id="balance">0</span>
+
+</div>
+
+<p>
+ID:
+<b id="accountID">---</b>
+</p>
+
+
+<button onclick="openWallet()">
+
+Cüzdanı Aç
+
+</button>
+
+
+</div>
+
+
+
+
 <div class="card">
 
 
@@ -146,22 +201,18 @@ Ara
 
 <div class="card">
 
+
 <button onclick="logout()">
 
 Güvenli Çıkış
 
 </button>
 
-</div>
-
-
 
 </div>
 
 
-
-
-
+</div>
 <script type="module">
 
 
@@ -201,7 +252,7 @@ from
 
 const firebaseConfig = {
 
-apiKey:"AIzaSyC9-0gIJWNdp0WcsTbHcEhOku6NG2oFd2I",
+apiKey:"AIzaSyC9-0G-0-0-0",
 
 authDomain:"esad-87546.firebaseapp.com",
 
@@ -219,12 +270,11 @@ appId:"1:7636719676:web:699f17f22759af64fa0b39"
 
 
 
-const app=initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-const auth=getAuth(app);
+const auth = getAuth(app);
 
-const db=getDatabase(app);
-
+const db = getDatabase(app);
 
 
 let uid=null;
@@ -246,16 +296,21 @@ return;
 uid=user.uid;
 
 
-const snap=
+
+// Kullanıcı bilgisi
+
+const userSnap=
+
 await get(
 ref(db,"users/"+uid)
 );
 
 
-if(snap.exists()){
+
+if(userSnap.exists()){
 
 
-let u=snap.val();
+let u=userSnap.val();
 
 
 document.getElementById("userName")
@@ -266,10 +321,63 @@ document.getElementById("userName")
 }
 
 
+
+
+
+// Cüzdan bilgisi
+
+
+const walletSnap=
+
+await get(
+ref(db,"wallets/"+uid)
+);
+
+
+
+if(walletSnap.exists()){
+
+
+let wallet=walletSnap.val();
+
+
+document.getElementById("balance")
+.innerHTML=
+wallet.balance || 0;
+
+
+
+document.getElementById("accountID")
+.innerHTML=
+wallet.accountId || "---";
+
+
+}
+
+
+
 });
 
 
 
+
+
+// Cüzdan sayfası
+
+window.openWallet=function(){
+
+
+window.location.href="cuzdan.html";
+
+
+}
+
+
+
+
+
+
+// Evrak arama
 
 
 window.searchData=async function(){
@@ -277,13 +385,16 @@ window.searchData=async function(){
 
 
 let value=
+
 document.getElementById("search")
 .value
-.toLowerCase();
+.toLowerCase()
+.trim();
 
 
 
 let result=
+
 document.getElementById("result");
 
 
@@ -293,6 +404,7 @@ result.innerHTML="";
 
 
 const snap=
+
 await get(
 ref(db,"documents/"+uid)
 );
@@ -301,14 +413,22 @@ ref(db,"documents/"+uid)
 
 if(!snap.exists()){
 
+
 result.innerHTML=
+
 `
+
 <div class="document">
+
 ❌ Kayıt bulunamadı
+
 </div>
+
 `;
 
+
 return;
+
 
 }
 
@@ -319,52 +439,82 @@ let found=false;
 
 
 Object.values(snap.val())
+
 .forEach(item=>{
 
 
+
 if(
-item.tag.toLowerCase()
+
+item.tag
+.toLowerCase()
 .includes(value)
+
 ){
+
 
 
 found=true;
 
 
-result.innerHTML +=
+
+result.innerHTML+=
+
 
 `
+
 <div class="document">
 
+
 <h3>
+
 📄 ${item.tag}
+
 </h3>
 
-<p>
-${item.message}
-</p>
 
 <p>
-📅 ${item.date}
+
+${item.message}
+
 </p>
+
+
+<p>
+
+📅 ${item.date}
+
+</p>
+
 
 </div>
+
 `;
 
+
 }
+
 
 
 });
 
 
 
+
+
 if(!found){
 
+
 result.innerHTML=
+
 `
+
 <div class="document">
+
 ❌ İşlem bulunamadı
+
 </div>
+
 `;
 
 }
@@ -376,13 +526,20 @@ result.innerHTML=
 
 
 
+
+// Çıkış
+
+
 window.logout=function(){
 
 
 signOut(auth)
+
 .then(()=>{
 
+
 window.location.href="index.html";
+
 
 });
 
