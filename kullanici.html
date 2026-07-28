@@ -23,7 +23,7 @@ font-family:"Segoe UI",Arial;
 
 .header{
 
-background:linear-gradient(135deg,#003b6f,#005ca8);
+background:#004b87;
 color:white;
 padding:25px;
 text-align:center;
@@ -73,14 +73,6 @@ button{
 background:#005ca8;
 color:white;
 border:0;
-cursor:pointer;
-
-}
-
-
-button:hover{
-
-background:#003b70;
 
 }
 
@@ -98,7 +90,7 @@ border-radius:10px;
 
 .wallet{
 
-background:linear-gradient(135deg,#0b4f8a,#0074d9);
+background:#005ca8;
 color:white;
 
 }
@@ -110,7 +102,6 @@ font-size:35px;
 font-weight:bold;
 
 }
-
 
 </style>
 
@@ -157,6 +148,7 @@ Kişisel hizmetlerinize erişebilirsiniz.
 
 </div>
 
+
 <p>
 ID:
 <b id="accountID">---</b>
@@ -164,19 +156,14 @@ ID:
 
 
 <button onclick="openWallet()">
-
 Cüzdanı Aç
-
 </button>
 
 
 </div>
 
 
-
-
 <div class="card">
-
 
 <h3>🔎 İşlem Arayın</h3>
 
@@ -186,9 +173,7 @@ placeholder="İşlem Arayın">
 
 
 <button onclick="searchData()">
-
 Ara
-
 </button>
 
 
@@ -201,13 +186,9 @@ Ara
 
 <div class="card">
 
-
 <button onclick="logout()">
-
 Güvenli Çıkış
-
 </button>
-
 
 </div>
 
@@ -215,11 +196,8 @@ Güvenli Çıkış
 </div>
 <script type="module">
 
-
 import {initializeApp}
-
 from
-
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
@@ -227,7 +205,9 @@ import {
 
 getAuth,
 onAuthStateChanged,
-signOut
+signOut,
+setPersistence,
+browserLocalPersistence
 
 }
 
@@ -277,6 +257,12 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 
+// OTURUMU KORU
+
+setPersistence(auth,browserLocalPersistence);
+
+
+
 let uid=null;
 
 
@@ -299,9 +285,7 @@ uid=user.uid;
 
 // Kullanıcı bilgisi
 
-const userSnap=
-
-await get(
+const userSnap = await get(
 ref(db,"users/"+uid)
 );
 
@@ -313,8 +297,8 @@ if(userSnap.exists()){
 let u=userSnap.val();
 
 
-document.getElementById("userName")
-.innerHTML=
+document.getElementById("userName").innerHTML=
+
 "Sayın "+u.name+" "+u.surname;
 
 
@@ -326,10 +310,7 @@ document.getElementById("userName")
 
 // Cüzdan bilgisi
 
-
-const walletSnap=
-
-await get(
+const walletSnap = await get(
 ref(db,"wallets/"+uid)
 );
 
@@ -338,22 +319,21 @@ ref(db,"wallets/"+uid)
 if(walletSnap.exists()){
 
 
-let wallet=walletSnap.val();
+let w=walletSnap.val();
 
 
-document.getElementById("balance")
-.innerHTML=
-wallet.balance || 0;
+document.getElementById("balance").innerHTML=
+
+w.balance || 0;
 
 
 
-document.getElementById("accountID")
-.innerHTML=
-wallet.accountId || "---";
+document.getElementById("accountID").innerHTML=
+
+w.accountId || "---";
 
 
 }
-
 
 
 });
@@ -361,27 +341,20 @@ wallet.accountId || "---";
 
 
 
-
-// Cüzdan sayfası
+// cüzdan aç
 
 window.openWallet=function(){
 
-
 window.location.href="cuzdan.html";
-
 
 }
 
 
 
 
-
-
 // Evrak arama
 
-
 window.searchData=async function(){
-
 
 
 let value=
@@ -393,10 +366,7 @@ document.getElementById("search")
 
 
 
-let result=
-
-document.getElementById("result");
-
+let result=document.getElementById("result");
 
 
 result.innerHTML="";
@@ -417,18 +387,12 @@ if(!snap.exists()){
 result.innerHTML=
 
 `
-
 <div class="document">
-
 ❌ Kayıt bulunamadı
-
 </div>
-
 `;
 
-
 return;
-
 
 }
 
@@ -439,66 +403,43 @@ let found=false;
 
 
 Object.values(snap.val())
-
 .forEach(item=>{
-
 
 
 if(
 
-item.tag
-.toLowerCase()
+item.tag.toLowerCase()
 .includes(value)
 
 ){
 
 
-
 found=true;
 
 
-
-result.innerHTML+=
-
-
-`
+result.innerHTML+=`
 
 <div class="document">
 
-
 <h3>
-
 📄 ${item.tag}
-
 </h3>
 
-
 <p>
-
 ${item.message}
-
 </p>
-
 
 <p>
-
 📅 ${item.date}
-
 </p>
-
 
 </div>
 
 `;
 
-
 }
 
-
-
 });
-
-
 
 
 
@@ -508,38 +449,28 @@ if(!found){
 result.innerHTML=
 
 `
-
 <div class="document">
-
 ❌ İşlem bulunamadı
-
 </div>
-
 `;
 
 }
 
 
-
 }
 
 
 
 
-
-// Çıkış
-
+// çıkış
 
 window.logout=function(){
 
 
 signOut(auth)
-
 .then(()=>{
 
-
 window.location.href="index.html";
-
 
 });
 
