@@ -4,49 +4,38 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>e-Saddık Vatandaş Alanı</title>
+<title>e-Saddık Giriş</title>
 
 <style>
 
-*{
-box-sizing:border-box;
-}
-
 body{
+
 margin:0;
 background:#eef3f8;
 font-family:"Segoe UI",Arial;
-}
-
-
-.header{
-
-background:#004b87;
-color:white;
-padding:25px;
-text-align:center;
 
 }
 
 
-.container{
+.box{
 
-max-width:800px;
-width:95%;
-margin:30px auto;
-
-}
-
-
-.card{
-
+max-width:420px;
+width:90%;
 background:white;
-padding:25px;
-border-radius:15px;
-box-shadow:0 5px 20px #0002;
-margin-bottom:20px;
+margin:50px auto;
+padding:30px;
+border-radius:20px;
+box-shadow:0 5px 20px #0003;
+
+}
+
+
+h1{
+
+text-align:center;
+color:#004b87;
 
 }
 
@@ -73,35 +62,25 @@ button{
 background:#005ca8;
 color:white;
 border:0;
+cursor:pointer;
 
 }
 
 
-.document{
+button:hover{
 
+background:#003b70;
+
+}
+
+
+#msg{
+
+text-align:center;
 margin-top:15px;
-padding:15px;
-background:#f4f8fc;
-border-left:5px solid #005ca8;
-border-radius:10px;
 
 }
 
-
-.wallet{
-
-background:#005ca8;
-color:white;
-
-}
-
-
-.balance{
-
-font-size:35px;
-font-weight:bold;
-
-}
 
 </style>
 
@@ -111,101 +90,97 @@ font-weight:bold;
 <body>
 
 
-<div class="header">
+
+<div class="box">
+
 
 <h1>🏛️ e-Saddık</h1>
 
-<p>Vatandaş Hizmet Alanı</p>
-
-</div>
-
-
-
-<div class="container">
-
-
-<div class="card">
-
-<h2 id="userName">
-Yükleniyor...
-</h2>
-
-<p>
-Kişisel hizmetlerinize erişebilirsiniz.
-</p>
-
-</div>
-
-
-
-<div class="card wallet">
-
-<h3>💳 Dijital Cüzdan</h3>
-
-<div class="balance">
-
-₺<span id="balance">0</span>
-
-</div>
-
-
-<p>
-ID:
-<b id="accountID">---</b>
+<p style="text-align:center">
+Vatandaş Sistemi
 </p>
 
 
-<button onclick="openWallet()">
-Cüzdanı Aç
+
+<h3>Kayıt Ol</h3>
+
+
+<input id="name"
+placeholder="Ad">
+
+
+<input id="surname"
+placeholder="Soyad">
+
+
+<input id="email"
+placeholder="E-Posta">
+
+
+<input id="password"
+type="password"
+placeholder="Şifre">
+
+
+<button onclick="register()">
+
+Kayıt Ol
+
 </button>
 
 
-</div>
 
 
-<div class="card">
-
-<h3>🔎 İşlem Arayın</h3>
+<hr>
 
 
-<input id="search"
-placeholder="İşlem Arayın">
+
+<h3>Giriş Yap</h3>
 
 
-<button onclick="searchData()">
-Ara
+<input id="loginEmail"
+placeholder="E-Posta">
+
+
+<input id="loginPassword"
+type="password"
+placeholder="Şifre">
+
+
+<button onclick="login()">
+
+Giriş Yap
+
 </button>
 
 
-<div id="result"></div>
+
+<p id="msg"></p>
 
 
 </div>
 
 
 
-<div class="card">
-
-<button onclick="logout()">
-Güvenli Çıkış
-</button>
-
-</div>
 
 
-</div>
+
 <script type="module">
 
+
 import {initializeApp}
+
 from
+
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 
 
 import {
 
 getAuth,
-onAuthStateChanged,
-signOut,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
 setPersistence,
 browserLocalPersistence
 
@@ -216,11 +191,12 @@ from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
+
 import {
 
 getDatabase,
 ref,
-get
+set
 
 }
 
@@ -230,7 +206,9 @@ from
 
 
 
-const firebaseConfig = {
+
+const firebaseConfig={
+
 
 apiKey:"AIzaSyC9-0G-0-0-0",
 
@@ -246,213 +224,126 @@ messagingSenderId:"7636719676",
 
 appId:"1:7636719676:web:699f17f22759af64fa0b39"
 
+
 };
 
 
 
-const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
-
-const db = getDatabase(app);
+const app=initializeApp(firebaseConfig);
 
 
-// OTURUMU KORU
+const auth=getAuth(app);
 
-setPersistence(auth,browserLocalPersistence);
+
+const db=getDatabase(app);
 
 
 
-let uid=null;
-
-
-
-onAuthStateChanged(auth,async(user)=>{
-
-
-if(!user){
-
-window.location.href="index.html";
-
-return;
-
-}
-
-
-uid=user.uid;
-
-
-
-// Kullanıcı bilgisi
-
-const userSnap = await get(
-ref(db,"users/"+uid)
+setPersistence(
+auth,
+browserLocalPersistence
 );
 
 
 
-if(userSnap.exists()){
 
 
-let u=userSnap.val();
+window.register=async()=>{
 
 
-document.getElementById("userName").innerHTML=
-
-"Sayın "+u.name+" "+u.surname;
-
-
-}
+let name=
+document.getElementById("name").value;
 
 
+let surname=
+document.getElementById("surname").value;
+
+
+let email=
+document.getElementById("email").value;
+
+
+let password=
+document.getElementById("password").value;
 
 
 
-// Cüzdan bilgisi
+try{
 
-const walletSnap = await get(
-ref(db,"wallets/"+uid)
+
+let userCredential=
+
+await createUserWithEmailAndPassword(
+
+auth,
+email,
+password
+
 );
 
 
 
-if(walletSnap.exists()){
-
-
-let w=walletSnap.val();
-
-
-document.getElementById("balance").innerHTML=
-
-w.balance || 0;
+let uid=userCredential.user.uid;
 
 
 
-document.getElementById("accountID").innerHTML=
+await set(
 
-w.accountId || "---";
+ref(db,"users/"+uid),
 
+{
 
-}
+name:name,
 
+surname:surname,
 
-});
-
-
-
-
-// cüzdan aç
-
-window.openWallet=function(){
-
-window.location.href="cuzdan.html";
+email:email
 
 }
 
-
-
-
-// Evrak arama
-
-window.searchData=async function(){
-
-
-let value=
-
-document.getElementById("search")
-.value
-.toLowerCase()
-.trim();
-
-
-
-let result=document.getElementById("result");
-
-
-result.innerHTML="";
-
-
-
-const snap=
-
-await get(
-ref(db,"documents/"+uid)
 );
 
 
 
-if(!snap.exists()){
+// cüzdan oluştur
 
+await set(
 
-result.innerHTML=
+ref(db,"wallets/"+uid),
 
-`
-<div class="document">
-❌ Kayıt bulunamadı
-</div>
-`;
+{
 
-return;
+name:name,
 
-}
+surname:surname,
 
+accountId:
+Math.floor(10000+Math.random()*90000),
 
-
-let found=false;
-
-
-
-Object.values(snap.val())
-.forEach(item=>{
-
-
-if(
-
-item.tag.toLowerCase()
-.includes(value)
-
-){
-
-
-found=true;
-
-
-result.innerHTML+=`
-
-<div class="document">
-
-<h3>
-📄 ${item.tag}
-</h3>
-
-<p>
-${item.message}
-</p>
-
-<p>
-📅 ${item.date}
-</p>
-
-</div>
-
-`;
+balance:1000
 
 }
 
-});
+);
 
 
 
-if(!found){
+document.getElementById("msg")
+.innerHTML=
+"✅ Kayıt başarılı";
 
 
-result.innerHTML=
+window.location.href="kullanici.html";
 
-`
-<div class="document">
-❌ İşlem bulunamadı
-</div>
-`;
+
+
+}
+
+catch(e){
+
+document.getElementById("msg")
+.innerHTML=e.message;
 
 }
 
@@ -462,17 +353,48 @@ result.innerHTML=
 
 
 
-// çıkış
 
-window.logout=function(){
+window.login=async()=>{
 
 
-signOut(auth)
-.then(()=>{
+let email=
 
-window.location.href="index.html";
+document.getElementById("loginEmail").value;
 
-});
+
+let password=
+
+document.getElementById("loginPassword").value;
+
+
+
+try{
+
+
+await signInWithEmailAndPassword(
+
+auth,
+email,
+password
+
+);
+
+
+
+window.location.href="kullanici.html";
+
+
+}
+
+catch(e){
+
+
+document.getElementById("msg")
+.innerHTML=e.message;
+
+
+}
+
 
 
 }
